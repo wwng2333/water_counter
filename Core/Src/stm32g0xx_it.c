@@ -22,6 +22,7 @@
 #include "stm32g0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +42,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern uint16_t PWM1_T_Count, PWM1_D_Count;
+extern float PWM1_Duty, PWM1_Freq;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -139,6 +141,30 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32g0xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles TIM3 global interrupt.
+  */
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+	if(LL_TIM_IsActiveFlag_CC1(TIM3))
+	{
+		//printf("TIM3 CC1 IRQ!\n");
+		PWM1_T_Count = LL_TIM_IC_GetCaptureCH1(TIM3) + 1;
+		PWM1_Duty = (float)PWM1_D_Count / PWM1_T_Count;
+		PWM1_Freq = (float)1000000 / PWM1_T_Count;
+	}
+	else if(LL_TIM_IsActiveFlag_CC2(TIM3))
+	{
+		//printf("TIM3 CC2 IRQ!\n");
+		PWM1_D_Count = LL_TIM_IC_GetCaptureCH2(TIM3) + 1;
+	}
+  /* USER CODE END TIM3_IRQn 0 */
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+
+  /* USER CODE END TIM3_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
